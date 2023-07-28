@@ -1,12 +1,29 @@
 {
   "env": {
-    "node": true
+    "node": true,
+    "jest": true
   },
   "parserOptions": {
     "ecmaVersion": 8,
     "sourceType": "module"
   },
-"rules": {
-"max-len": ["error", { "code": 80 }]
-}
+  "rules": {
+    "max-len": ["error", { "code": 80 }],
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "always", // No requerir extensión en archivos .js
+        "jsx": "always", // No requerir extensión en archivos .jsx
+        "ts": "always", // No requerir extensión en archivos .ts
+        "tsx": "always" // No requerir extensión en archivos .tsx
+      }
+    ]
+  },
+  "extends": "airbnb",
+  "overrides": [
+    {
+      "files": ["**/*.spec.js", "**/*.spec.jsx"]
+    }
+  ]
 }
