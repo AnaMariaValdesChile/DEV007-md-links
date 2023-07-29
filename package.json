@@ -7,6 +7,9 @@
   "bin": {
     "mdLinks": "cli.js"
   },
+  "publishConfig": {
+    "registry": "https://github.com/AnaMariaValdesChile/DEV007-md-links"
+  },
   "keywords": [
     "node.js",
     "http",
