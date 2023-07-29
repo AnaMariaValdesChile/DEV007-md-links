@@ -8,7 +8,7 @@
     "mdLinks": "cli.js"
   },
   "publishConfig": {
-    "registry": "https://github.com/AnaMariaValdesChile/DEV007-md-links"
+    "@AnaMariaValdesChile:registry": "https://npm.pkg.github.com"
   },
   "keywords": [
     "node.js",
