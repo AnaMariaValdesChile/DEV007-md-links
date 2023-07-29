@@ -7,9 +7,6 @@
   "bin": {
     "mdLinks": "cli.js"
   },
-  "publishConfig": {
-    "@AnaMariaValdesChile:registry": "https://npm.pkg.github.com"
-  },
   "keywords": [
     "node.js",
     "http",
