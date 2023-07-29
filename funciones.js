@@ -162,7 +162,7 @@ export function estadisticas(arrayLinks) {
   const linksMap = new Map();
   let broken = 0;
   arrayLinks.forEach((link) => {
-    if (link.ok === 'fail') {
+    if (link.ok === chalk.red('fail')) {
       broken += 1;
     }
 
