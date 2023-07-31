@@ -1,12 +1,13 @@
-/* eslint-disable max-len */
+/* eslint-disable implicit-arrow-linebreak */
 import fs from 'fs';
 import path from 'path';
 import { marked } from 'marked';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import Table from 'cli-table3';
-import chalk from 'chalk';
-// import parse5 from 'parse5'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import colors from 'colors';
 
 // existe la ruta
 
@@ -98,63 +99,62 @@ export function leerDirectorio(directorio) {
   return false;
 }
 
+// eslint-disable-next-line max-len
 // validar links y devolver arreglo de objetos con la informacion de cada link validada
-export async function validarLinks(links) {
-  const requests = links.map(async (link) => {
-    try {
-      const response = await axios.head(link.HREF);
-      return {
+export function validarLinks(links) {
+  const requests = links.map((link) =>
+    axios
+      .head(link.HREF)
+      .then((response) => ({
         text: link.TEXT,
         href: link.HREF,
         file: link.FILE,
         status: response.status,
-        ok: chalk.green('ok'),
-      };
-    } catch (error) {
-      return {
+        ok: colors.green('ok'),
+      }))
+      .catch((error) => ({
         text: link.TEXT,
         href: link.HREF,
         file: link.FILE,
         status: error.response ? error.response.status : 0,
-        ok: chalk.red('fail'),
-      };
-    }
+        ok: colors.red('fail'),
+      })),
+  );
+
+  return Promise.all(requests).then((results) => {
+    // Crear una nueva tabla
+    const table = new Table({
+      head: [
+        colors.blue('NUMERO'),
+        colors.blue('TEXT'),
+        colors.blue('HREF'),
+        colors.blue('FILE'),
+        colors.blue('STATUS'),
+        colors.blue('OK'),
+      ],
+      colWidths: [10, 50, 30, 20, 10, 10],
+    });
+
+    // Agregar filas a la tabla con los datos de cada link
+    let numero = 1;
+    results.forEach((link) => {
+      const okColor = link.ok === 'ok' ? 'green' : 'red';
+      table.push([
+        colors.blue(numero),
+        link.text,
+        link.href,
+        link.file,
+        colors.yellow(link.status),
+        colors[okColor](link.ok),
+      ]);
+      numero += 1;
+    });
+
+    // Imprimir la tabla
+    console.log(table.toString());
+
+    return results;
   });
-
-  const results = await Promise.all(requests);
-
-  // Crear una nueva tabla
-  const table = new Table({
-    head: [
-      chalk.blue('NUMERO'),
-      chalk.blue('TEXT'),
-      chalk.blue('HREF'),
-      chalk.blue('FILE'),
-      chalk.blue('STATUS'),
-      chalk.blue('OK'),
-    ],
-    colWidths: [10, 50, 30, 20, 10, 10],
-  });
-
-  // Agregar filas a la tabla con los datos de cada link
-  let numero = 1;
-  results.forEach((link) => {
-    const okColor = link.ok === 'ok' ? 'green' : 'red';
-    table.push([
-      chalk.blue(numero),
-      link.text,
-      link.href,
-      link.file,
-      chalk.yellow(link.status),
-      chalk[okColor](link.ok),
-    ]);
-    numero += 1;
-  });
-
-  // Imprimir la tabla
-  console.log(table.toString());
-
-  return results;
 }
 
 // Estadisticas Links
@@ -162,7 +162,7 @@ export function estadisticas(arrayLinks) {
   const linksMap = new Map();
   let broken = 0;
   arrayLinks.forEach((link) => {
-    if (link.ok === chalk.red('fail')) {
+    if (link.ok === colors.red('fail')) {
       broken += 1;
     }
 
@@ -177,3 +177,9 @@ export function estadisticas(arrayLinks) {
     : { TOTAL: total, UNIQUE: unique };
   return objetoEstadisticas;
 }
+
+leerArchivoMD(
+  'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas\\archivo.md',
+)
+  .then((respuesta) => convertirAHtml(respuesta))
+  .then((html) => console.log(extraerLinks(html, 'archivo.md')));

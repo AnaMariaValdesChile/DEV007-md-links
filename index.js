@@ -2,7 +2,7 @@
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable prefer-promise-reject-errors */
 /* eslint-disable max-len */
-import chalk from 'chalk';
+import colors from 'colors';
 import Table from 'cli-table3';
 import {
   existenciaDeLaRuta,
@@ -26,7 +26,7 @@ export default function mdLinks(path, options) {
           ? path
           : convirtiendoLaRutaAAbsoluta(path);
         if (rutaEsArchivoMD(pathToWork)) {
-          console.log(chalk.blue('La ruta corresponde a un Archivo .md'));
+          console.log(colors.blue('La ruta corresponde a un Archivo .md'));
           leerArchivoMD(pathToWork)
             .then((contenido) => {
               const html = convertirAHtml(contenido);
@@ -34,7 +34,7 @@ export default function mdLinks(path, options) {
 
               if (links.length > 0 && options.validate) {
                 console.log(
-                  chalk.blue(
+                  colors.blue(
                     `Se encontraron ${links.length} links en el archivo`,
                   ),
                 );
@@ -44,7 +44,7 @@ export default function mdLinks(path, options) {
                     resolve(result);
                   } else {
                     console.log(
-                      chalk.yellow(
+                      colors.yellow(
                         'Para obtener estadisticas agregre comando --stats',
                       ),
                     );
@@ -52,23 +52,23 @@ export default function mdLinks(path, options) {
                 });
               } else if (links.length > 0 && !options.validate) {
                 console.log(
-                  chalk.blue(
+                  colors.blue(
                     `Se encontraron ${links.length} links en el archivo`,
                   ),
                 );
                 const tabla = new Table({
                   head: [
-                    chalk.blue('NUMERO'),
-                    chalk.blue('TEXT'),
-                    chalk.blue('HREF'),
-                    chalk.blue('FILE'),
+                    colors.blue('NUMERO'),
+                    colors.blue('TEXT'),
+                    colors.blue('HREF'),
+                    colors.blue('FILE'),
                   ],
                   colWidths: [10, 50, 50, 20],
                 });
                 let numero = 1;
                 links.forEach((link) => {
                   tabla.push([
-                    chalk.blue(numero),
+                    colors.blue(numero),
                     link.TEXT,
                     link.HREF,
                     link.FILE,
@@ -80,24 +80,24 @@ export default function mdLinks(path, options) {
                   const result = estadisticas(links);
                   console.log(result);
                   resolve(
-                    chalk.yellow(
+                    colors.yellow(
                       'Si necesita validar los links agregue comando --validate',
                     ),
                   );
                 } else {
                   console.log(
-                    chalk.yellow(
+                    colors.yellow(
                       'Para validar los links agrege comando --validate',
                     ),
                   );
                   reject(
-                    chalk.yellow(
+                    colors.yellow(
                       'Para obtener estadisticas agregue comando --stats',
                     ),
                   );
                 }
               } else {
-                reject(chalk.red('No se encontraron Links'));
+                reject(colors.red('No se encontraron Links'));
               }
             })
             .catch((error) => {
@@ -105,17 +105,17 @@ export default function mdLinks(path, options) {
             });
         } else if (rutaEsDirectorio(pathToWork)) {
           console.log(pathToWork);
-          console.log(chalk.blue('La ruta corresponde a un Directorio'));
-          console.log(chalk.green('Leyendo archivos...'));
+          console.log(colors.blue('La ruta corresponde a un Directorio'));
+          console.log(colors.green('Leyendo archivos...'));
           const archivosDirectorio = leerDirectorio(pathToWork);
           if (archivosDirectorio) {
             if (archivosDirectorio.length) {
               console.log(
-                chalk.blue(
+                colors.blue(
                   `Se encontraron ${archivosDirectorio.length} archivos .md`,
                 ),
               );
-              console.log(chalk.green('Extrayendo links...'));
+              console.log(colors.green('Extrayendo links...'));
               const allLinks = [];
               const promises = archivosDirectorio.map((archivo) =>
                 leerArchivoMD(archivo)
@@ -124,7 +124,7 @@ export default function mdLinks(path, options) {
                     const links = extraerLinks(html, archivo);
                     const rutaRelativa = archivo.split('\\');
                     console.log(
-                      chalk.blue(
+                      colors.blue(
                         `Se encontraron ${links.length} links en el archivo ${
                           rutaRelativa[rutaRelativa.length - 1]
                         }`,
@@ -139,7 +139,7 @@ export default function mdLinks(path, options) {
               Promise.all(promises).then(() => {
                 const links = allLinks.flat();
                 console.log(
-                  chalk.blue(
+                  colors.blue(
                     `Se encontraron ${links.length} links en total es este Directorio`,
                   ),
                 );
@@ -148,10 +148,10 @@ export default function mdLinks(path, options) {
                   validarLinks(links).then((linksValidate) => {
                     if (options.stats) {
                       const result = estadisticas(linksValidate);
-                      resolve(chalk.green(result));
+                      resolve(colors.green(result));
                     } else {
                       console.log(
-                        chalk.yellow(
+                        colors.yellow(
                           'Para obtener estadisticas agregue comando --stats',
                         ),
                       );
@@ -161,89 +161,91 @@ export default function mdLinks(path, options) {
                   console.log(links);
                   if (options.stats) {
                     const result = estadisticas(links);
-                    console.log(chalk.green(result));
+                    console.log(colors.green(result));
                     resolve(
-                      chalk.yellow(
+                      colors.yellow(
                         'Para validar los links agrege comando --validate',
                       ),
                     );
                   } else {
                     console.log(
-                      chalk.yellow(
+                      colors.yellow(
                         'Para validar los links agrege comando --validate',
                       ),
                     );
                     reject(
-                      chalk.yellow(
+                      colors.yellow(
                         'Para obtener estadisticas agregue comando --stats',
                       ),
                     );
                   }
                 } else {
-                  reject(chalk.red('No se encontraron Links'));
+                  reject(colors.red('No se encontraron Links'));
                 }
               });
             } else {
-              console.log(chalk.red('No se encontraron archivos .md'));
+              console.log(colors.red('No se encontraron archivos .md'));
             }
           } else {
-            reject(chalk.red('El directorio esta vacio'));
+            reject(colors.red('El directorio esta vacio'));
           }
         } else {
           reject(
-            chalk.red(
+            colors.red(
               'La ruta no corresponde a un Archivo .md ni un Directorio.',
             ),
           );
         }
       } else if (path.includes('--validate') || path.includes('--stats')) {
         reject(
-          chalk.red(
+          colors.red(
             'Debe ingresar una ruta antes de las opciones --validate o --stats',
           ),
         );
       } else {
-        reject(chalk.red('La ruta no existe.'));
+        reject(colors.red('La ruta no existe.'));
       }
     } else {
-      console.log(chalk.magenta('Bienvenido a MdLinks'));
+      console.log(colors.magenta('Bienvenido a MdLinks'));
       console.log(
-        chalk.magenta(
+        colors.magenta(
           'Esta es una libreria para obtener links de un archivo .md',
         ),
       );
-      console.log(chalk.magenta('Pasos:'));
+      console.log(colors.magenta('Pasos:'));
       console.log(
-        chalk.magenta(
+        colors.magenta(
           '1- Ejecuta comando npx mdLinks + ruta (del archivo o carpeta) ',
         ),
       );
       console.log(
-        chalk.magenta(
+        colors.magenta(
           'o bien solo mdLinks mas la ruta (si realizaste npm install global)',
         ),
       );
       console.log(
-        chalk.magenta(
+        colors.magenta(
           '2- Obtendras el resultado de los links encontrados con sus propiedades text, href y file',
         ),
       );
       console.log(
-        chalk.magenta(
+        colors.magenta(
           '3- Si deseas validar o recibir estadisticas ademas puedes ejecutar:',
         ),
       );
       console.log(
-        chalk.magenta(
+        colors.magenta(
           'npx mdLinks <ruta> --validate o mdLinks <ruta> --validate (para validar los links) ',
         ),
       );
       console.log(
-        chalk.magenta(
+        colors.magenta(
           'npx mdLinks <ruta> --stats o mdLinks <ruta> --stats (para recibir estadisticas) ',
         ),
       );
-      reject(chalk.magenta('puedes usar --validate y --stats simultaneamente'));
+      reject(
+        colors.magenta('puedes usar --validate y --stats simultaneamente'),
+      );
     }
   });
 }
