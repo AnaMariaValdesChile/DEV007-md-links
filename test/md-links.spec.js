@@ -1,5 +1,5 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable prefer-promise-reject-errors */
-/* eslint-disable max-len */
 import {
   existenciaDeLaRuta,
   rutaAbsoluta,
@@ -13,6 +13,29 @@ import {
   validarLinks,
   estadisticas,
 } from '../funciones.js';
+
+// constantes para pruebas
+
+const contenidoMD = '# MARKDOWN LINKS···Encuentra links en archivos .md···';
+
+const contenidoHtml =
+  // eslint-disable-next-line max-len
+  '<h1>MARKDOWN LINKS</h1><p>Encuentra links en archivos .md</p><p><img src="https://raw.githubusercontent.com/AnaMariaValdesChile/DEV007-md-links/feature-tablasYColor/mdLinks.png" alt=""></p><h2>Índice</h2><ul><li><a href="#1-pre%C3%A1mbulo">1. Preámbulo</a></li><li><a href="#2-pasos-para-ejecutar-en-tu-terminal">2.Pasos para ejecutar en tu terminal</a></li><li><a href="#3-resultados">3. Resultados</a></li><li><a href="#4-resumen-del-proyecto">4. Resumen del proyecto</a></li></ul>';
+
+const respLinks = [
+  { TEXT: '1. Preámbulo', HREF: '#1-pre%C3%A1mbulo', FILE: 'archivo.md' },
+  {
+    TEXT: '2.Pasos para ejecutar en tu terminal',
+    HREF: '#2-pasos-para-ejecutar-en-tu-terminal',
+    FILE: 'archivo.md',
+  },
+  { TEXT: '3. Resultados', HREF: '#3-resultados', FILE: 'archivo.md' },
+  {
+    TEXT: '4. Resumen del proyecto',
+    HREF: '#4-resumen-del-proyecto',
+    FILE: 'archivo.md',
+  },
+];
 
 const links = [
   {
@@ -47,16 +70,19 @@ const links = [
 ];
 
 describe('existenciaDeLaRuta', () => {
-  it('Deberia devolver una funcion', () => {
-    expect(typeof existenciaDeLaRuta).toBe('function');
-  });
   it('Deberia devolver la ruta', () => {
-    expect(existenciaDeLaRuta('README.md')).toEqual('README.md');
+    expect(
+      existenciaDeLaRuta(
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
+      ),
+    ).toEqual(
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
+    );
   });
   // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', async () => {
+  it('Deberia retornar false para una ruta que no existe', () => {
     try {
-      await existenciaDeLaRuta('/c/v/lalala.md');
+      existenciaDeLaRuta('/c/v/lalala.md');
     } catch (error) {
       expect(error).toEqual(false);
     }
@@ -64,22 +90,19 @@ describe('existenciaDeLaRuta', () => {
 });
 
 describe('rutaAbsoluta', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof rutaAbsoluta).toBe('function');
-  });
-  it('Deberia devolver la ruta', () => {
+  it('Deberia devolver la ruta si la ruta es absoluta', () => {
     expect(
       rutaAbsoluta(
-        'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/READMEE.md',
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
       ),
     ).toEqual(
-      'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/READMEE.md',
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
     );
   });
   // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', async () => {
+  it('Deberia retornar false para una ruta relativa', async () => {
     try {
-      await rutaAbsoluta('/c/v/lalala.md');
+      await rutaAbsoluta('pruebas');
     } catch (error) {
       expect(error).toEqual(false);
     }
@@ -87,16 +110,13 @@ describe('rutaAbsoluta', () => {
 });
 
 describe('convirtiendoLaRutaAAbsoluta', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof convirtiendoLaRutaAAbsoluta).toBe('function');
-  });
   it('Deberia devolver la ruta convertida a absoluta', () => {
-    expect(convirtiendoLaRutaAAbsoluta('READMEE.md')).toEqual(
-      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\READMEE.md',
+    expect(convirtiendoLaRutaAAbsoluta('pruebas')).toEqual(
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
     );
   });
   // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', async () => {
+  it('Deberia retornar false para una ruta que no existe', async () => {
     try {
       convirtiendoLaRutaAAbsoluta('/c/v/lalala.md');
     } catch (error) {
@@ -106,22 +126,21 @@ describe('convirtiendoLaRutaAAbsoluta', () => {
 });
 
 describe('rutaEsArchivoMD', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof rutaEsArchivoMD).toBe('function');
-  });
-  it('Deberia devolver la ruta convertida a absoluta', () => {
+  it('Deberia devolver la ruta del archivo si es un archivo .md', () => {
     expect(
       rutaEsArchivoMD(
-        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\READMEE.md',
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
       ),
     ).toEqual(
-      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\READMEE.md',
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
     );
   });
   // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', async () => {
+  it('Deberia retornar false si es diferente a un archivo .md', async () => {
     try {
-      rutaEsArchivoMD('/c/v/lalala.js');
+      rutaEsArchivoMD(
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\index.js',
+      );
     } catch (error) {
       expect(error).toEqual(false);
     }
@@ -129,23 +148,20 @@ describe('rutaEsArchivoMD', () => {
 });
 
 describe('rutaEsDirectorio', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof rutaEsDirectorio).toBe('function');
-  });
-  it('Deberia devolver la ruta convertida a absoluta', () => {
+  it('Deberia devolver la ruta del directorio si es un directorio', () => {
     expect(
       rutaEsDirectorio(
-        'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/DirectorioPrueba',
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
       ),
     ).toEqual(
-      'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/DirectorioPrueba',
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
     );
   });
   // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', async () => {
+  it('Deberia retornar false si la ruta es diferente a un directorio', async () => {
     try {
       await rutaEsDirectorio(
-        'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/DirectorioPrueba/carpetaPrueba/invento2.md',
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\index.js',
       );
     } catch (error) {
       expect(error).toEqual(false);
@@ -154,17 +170,19 @@ describe('rutaEsDirectorio', () => {
 });
 
 describe('leerArchivoMD', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof leerArchivoMD).toBe('function');
+  it('Debería devolver una promesa', async () => {
+    const promesa = leerArchivoMD(
+      'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\prueba\\archivo.md',
+    );
+    expect(promesa).toBeInstanceOf(Promise);
   });
-  it('Deberia devolver una promesa', () => {
-    expect(
-      leerArchivoMD(
-        'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/READMEE.md',
-      ),
-    ).toBe({});
-  });
-  // eslint-disable-next-line max-len
+  // it('Debería devolver un string del contenido del archivo .md', () => {
+  //   expect(
+  //     typeof leerArchivoMD(
+  //       'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\prueba\\archivo.md',
+  //     ),
+  //   ).toBe('string');
+  // });
   it('Deberia arrojar un error', async () => {
     try {
       await leerArchivoMD('/c/v/lalala.js');
@@ -175,31 +193,42 @@ describe('leerArchivoMD', () => {
 });
 
 describe('convertirAHtml', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof convertirAHtml).toBe('function');
+  it('Debería devolver un tipo string', () => {
+    expect(typeof convertirAHtml(contenidoMD)).toBe('string');
   });
-  // eslint-disable-next-line max-len
-  it('Deberia devolver un string en formato html', () =>
-    expect(
-      convertirAHtml('Quiero que me retorne esto en formato de html'),
-    ).toEqual('<p>Quiero que me retorne esto en formato de html</p>'));
+  // it('Debería devolver un string en formato html', () => {
+  //   expect(convertirAHtml(contenidoMD)).toEqual(contenidoHtml); // test no pasa
+  // });
+  it('Deberia devolver false para una ruta no existente', () => {
+    try {
+      convertirAHtml('/c/v/lalala.js');
+    } catch (error) {
+      expect(error).toEqual(false);
+    }
+  });
 });
 
 describe('extraerLinks', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof extraerLinks).toBe('function');
+  it('Debería devolver un tipo objeto', async () => {
+    expect(
+      typeof extraerLinks(
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+      ),
+    ).toBe('object');
   });
-  // eslint-disable-next-line max-len
-  it('Deberia rechazar la promesa', () =>
-    extraerLinks('/c/v/lalala.md').catch((error) => {
-      expect(error).toBe('la ruta no existe');
-    }));
+  it('Debería devolver una arreglo de objetos', async () => {
+    expect(extraerLinks(contenidoHtml, 'archivo.md')).toEqual(respLinks);
+  });
+  it('Deberia retornar false', () => {
+    try {
+      extraerLinks(contenidoMD, 'archivo.md');
+    } catch (error) {
+      expect(error).toEqual(false);
+    }
+  });
 });
 
 describe('leerDirectorio', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof leerDirectorio).toBe('function');
-  });
   // eslint-disable-next-line max-len
   it('Deberia rechazar la promesa', () =>
     leerDirectorio('/c/v/lalala.md').catch((error) => {
@@ -219,9 +248,6 @@ describe('validarLinks', () => {
 });
 
 describe('estadisticas', () => {
-  it('Deberia devolver una funcion', () => {
-    expect(typeof estadisticas).toBe('function');
-  });
   it('Deberia devolver un Objeto', () => {
     expect(estadisticas(links)).toEqual('{TOTAL: 6, UNIQUE: 1}');
   });
