@@ -13,7 +13,6 @@ import {
   validarLinks,
   estadisticas,
 } from '../funciones.js';
-
 // constantes para pruebas
 
 const contenidoMD = '# MARKDOWN LINKS···Encuentra links en archivos .md···';
@@ -66,6 +65,53 @@ const links = [
     TEXT: '9. Checklist',
     HREF: '#9-checklist',
     FILE: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+  },
+];
+
+const linksVacio = [];
+
+const linksValidados = [
+  {
+    text: 'Leer un archivo',
+    href: 'https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback',
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 200,
+    ok: '\x1B[32mok\x1B[39m',
+  },
+  {
+    text: 'Leer un directorio',
+    href: 'https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback',
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 200,
+    ok: '\x1B[32mok\x1B[39m',
+  },
+  {
+    text: 'Path',
+    href: 'https://nodejs.org/api/path.html',
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 200,
+    ok: '\x1B[32mok\x1B[39m',
+  },
+  {
+    text: 'Linea de comando CLI',
+    href: 'https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e',
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 200,
+    ok: '\x1B[32mok\x1B[39m',
+  },
+  {
+    text: 'recurso',
+    href: undefined,
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 0,
+    ok: '\x1B[31mfail\x1B[39m',
+  },
+  {
+    text: '9. Checklist',
+    href: '#9-checklist',
+    file: 'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\README.md',
+    status: 0,
+    ok: '\x1B[31mfail\x1B[39m',
   },
 ];
 
@@ -219,7 +265,7 @@ describe('extraerLinks', () => {
   it('Debería devolver una arreglo de objetos', async () => {
     expect(extraerLinks(contenidoHtml, 'archivo.md')).toEqual(respLinks);
   });
-  it('Deberia retornar false', () => {
+  it('Deberia retornar false para un contenido que no sea html', () => {
     try {
       extraerLinks(contenidoMD, 'archivo.md');
     } catch (error) {
@@ -229,31 +275,72 @@ describe('extraerLinks', () => {
 });
 
 describe('leerDirectorio', () => {
-  // eslint-disable-next-line max-len
-  it('Deberia rechazar la promesa', () =>
-    leerDirectorio('/c/v/lalala.md').catch((error) => {
-      expect(error).toBe('la ruta no existe');
-    }));
+  it('Deberia devolver un array', () => {
+    expect(
+      typeof leerDirectorio(
+        'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas',
+      ),
+    ).toBe('object');
+  });
+  it('Deberia devolver un array vacio para un directorio sin archivos .md', () => {
+    expect(leerDirectorio('test')).toEqual([]);
+  });
+  // it('Deberia devolver un array vacio para un directorio sin archivos .md', () => {
+  //   leerDirectorio('RecursividadPrueba');
+  //   expect(
+  //     leerDirectorio(
+  //       'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\RecursividadPrueba',
+  //     ),
+  //   ).toHaveBeenCalledWidth(1);
+  //   expect(
+  //     leerDirectorio(
+  //       'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\RecursividadPrueba\\prueba',
+  //     ),
+  //   ).toHaveBeenCalledWidth(1);
+  // });
+  it('Deberia retornar false para un directorio vacio', () => {
+    try {
+      leerDirectorio('DirectorioPruebaVacio');
+    } catch (error) {
+      expect(error).toBe(false);
+    }
+  });
 });
 
 describe('validarLinks', () => {
-  it('Deberia ser una funcion', () => {
-    expect(typeof validarLinks).toBe('function');
+  it('Debería devolver una promesa para array de links', async () => {
+    const promesa = validarLinks(links);
+    expect(promesa).toBeInstanceOf(Promise);
   });
-  // eslint-disable-next-line max-len
-  it('Deberia rechazar la promesa', () =>
-    validarLinks('/c/v/lalala.md').catch((error) => {
-      expect(error).toBe('la ruta no existe');
-    }));
+  it('Debería devolver arreglo de objetos para array de links', async () => {
+    const promesa = await validarLinks(links);
+    expect(promesa).toEqual(linksValidados);
+  });
+  it('Deberia rechazar la promesa para un arreglo vacio', () => {
+    try {
+      validarLinks(linksVacio);
+    } catch (error) {
+      expect(error).toBe(false);
+    }
+  });
 });
 
 describe('estadisticas', () => {
-  it('Deberia devolver un Objeto', () => {
-    expect(estadisticas(links)).toEqual('{TOTAL: 6, UNIQUE: 1}');
+  it('Deberia devolver un Objeto con TOTAL y UNIQUE', () => {
+    expect(estadisticas(links)).toEqual({ TOTAL: 6, UNIQUE: 1 });
   });
-  // eslint-disable-next-line max-len
-  it('Deberia arrojar un error', () =>
-    estadisticas('/c/v/lalala.md').catch((error) => {
-      expect(error).toEqual(false);
-    }));
+  it('Deberia devolver un Objeto con TOTAL, UNIQUE y BROKEN', () => {
+    expect(estadisticas(linksValidados)).toEqual({
+      TOTAL: 6,
+      UNIQUE: 6,
+      BROKEN: 2,
+    });
+  });
+  it('Deberia arrojar un error', () => {
+    try {
+      estadisticas(linksVacio);
+    } catch (error) {
+      expect(error).toBe(false);
+    }
+  });
 });
