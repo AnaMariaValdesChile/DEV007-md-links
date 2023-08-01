@@ -63,7 +63,7 @@ export default function mdLinks(path, options) {
                     colors.blue('HREF'),
                     colors.blue('FILE'),
                   ],
-                  colWidths: [10, 50, 50, 20],
+                  colWidths: [10, 30, 40, 60],
                 });
                 let numero = 1;
                 links.forEach((link) => {
@@ -249,12 +249,3 @@ export default function mdLinks(path, options) {
     }
   });
 }
-
-// ruta absoluta 'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/READMEE.md'
-// ruta relativa 'READMEE.md'
-// ruta no existe 'REAMEE.md'
-// ruta RELATIVA DIRECTORIO 'DirectorioPrueba'
-// ruta ABSOLUTA DIRECTORIO 'C:/Users/Acer/Desktop/LABORATORIA/MDLinks/DEV007-md-links/DirectorioPrueba'
-// ruta absoluta fuera de proyecto mdLinks 'C:/Users/Acer/Desktop/carpeta'
-
-// options --validate --start

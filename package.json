@@ -1,9 +1,10 @@
 {
   "name": "anavaldes-md-links",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Encuentra links en archivos .md",
   "author": "Ana Maria Valdes",
   "type": "module",
+  "main": "index.js",
   "bin": {
     "mdLinks": "cli.js"
   },

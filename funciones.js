@@ -86,10 +86,8 @@ export function leerDirectorio(directorio) {
       // eslint-disable-next-line max-len
       const dir = path.join(directorio, element); // Utilizamos path.join() para obtener la ruta completa del archivo o carpeta
       if (fs.statSync(dir).isFile() && path.extname(element).includes('.md')) {
-        // eslint-disable-next-line max-len
         archivos.push(dir); // Agregamos la ruta completa del archivo .md al arreglo de archivos
       } else if (fs.statSync(dir).isDirectory()) {
-        // eslint-disable-next-line max-len
         const archivosRecursivos = leerDirectorio(dir);
         archivos.push(...archivosRecursivos);
       }
@@ -101,7 +99,7 @@ export function leerDirectorio(directorio) {
 
 // eslint-disable-next-line max-len
 // validar links y devolver arreglo de objetos con la informacion de cada link validada
-export function validarLinks(links) {
+export async function validarLinks(links) {
   const requests = links.map((link) =>
     axios
       .head(link.HREF)
@@ -120,7 +118,6 @@ export function validarLinks(links) {
         ok: colors.red('fail'),
       })),
   );
-
   return Promise.all(requests).then((results) => {
     // Crear una nueva tabla
     const table = new Table({
@@ -152,7 +149,6 @@ export function validarLinks(links) {
 
     // Imprimir la tabla
     console.log(table.toString());
-
     return results;
   });
 }
@@ -172,14 +168,11 @@ export function estadisticas(arrayLinks) {
   const total = arrayLinks.length;
   const unique = linksMap.size;
 
-  const objetoEstadisticas = arrayLinks[0].ok
-    ? { TOTAL: total, UNIQUE: unique, BROKEN: broken }
-    : { TOTAL: total, UNIQUE: unique };
-  return objetoEstadisticas;
+  if (arrayLinks.length) {
+    const objetoEstadisticas = arrayLinks[0].ok
+      ? { TOTAL: total, UNIQUE: unique, BROKEN: broken }
+      : { TOTAL: total, UNIQUE: unique };
+    return objetoEstadisticas;
+  }
+  return false;
 }
-
-leerArchivoMD(
-  'C:\\Users\\Acer\\Desktop\\LABORATORIA\\MDLinks\\DEV007-md-links\\pruebas\\archivo.md',
-)
-  .then((respuesta) => convertirAHtml(respuesta))
-  .then((html) => console.log(extraerLinks(html, 'archivo.md')));
